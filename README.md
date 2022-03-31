@@ -9,7 +9,7 @@ A single pomodoro consists of the following:
 1. 25 minutes of work
 2. 5 minute break
 3. Repeat 1 and 2 four times
-4. 30 minute break
+4. 25 minute break
 
 
 ## User Stories 
