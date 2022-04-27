@@ -2,7 +2,7 @@
 
 **Application overview:**
 
-A desktop pomodoro timer for a single task. I would like a productivity tool built into my desktop to complement the tasks that I have in my daily planner.
+A desktop pomodoro timer.
 
 A single pomodoro consists of the following:
 
