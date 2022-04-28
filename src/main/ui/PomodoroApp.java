@@ -2,7 +2,6 @@ package ui;
 
 import model.Pomodoro;
 import model.PomodoroStatus;
-import model.TimerStatus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,18 +16,19 @@ import java.util.Observer;
 public class PomodoroApp implements Observer, ActionListener {
     // window dimensions
     public static final int WIDTH = 400;
-    public static final int HEIGHT = 200;
+    public static final int HEIGHT = 150;
 
-    // duration of pomodoro phases in seconds
-    public static final int WORK_DURATION = 5;//25*60;
-    public static final int BREAK_DURATION = 5;//*60;
-    public static final int LONG_BREAK_DURATION = 15*60;
-    public static final int NUM_REPS = 4;
+    // default duration of pomodoro phases in seconds
+    public static final int DEFAULT_WORK_DURATION = 25*60;
+    public static final int DEFAULT_SHORT_BREAK_DURATION = 5*60;
+    public static final int DEFAULT_LONG_BREAK_DURATION = 15*60;
+    public static final int DEFAULT_NUM_REPS = 4;
 
     private JFrame frame;
     private JPanel startPanel;
+    private SettingsPanel settingsPanel;
     private JButton startButton;
-    private JTextField startTextField;
+    private JButton exitButton;
 
     private TimerPanel timerPanel;
     private Pomodoro pomodoro;
@@ -37,30 +37,48 @@ public class PomodoroApp implements Observer, ActionListener {
         // set up window
         frame = new JFrame("Pomodoro Timer");
         frame.setMinimumSize(new Dimension(WIDTH, HEIGHT));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setUndecorated(true);
         frame.setOpacity(0.9F);
+        //setLocationToBotRight(frame);
+        frame.setLocationRelativeTo(null);
+        frame.setLayout(new GridLayout(1,0)); //!!!
+
+        exitButton = new JButton("x");
+        exitButton.addActionListener(this);
 
         // set up starting menu contents
+        settingsPanel = new SettingsPanel();
+
         startButton = new JButton("go!");
         startButton.addActionListener(this);
-        startTextField = new JTextField("start new pomodoro?");
 
         startPanel = new JPanel();
-        startPanel.setLayout(new BoxLayout(startPanel, BoxLayout.PAGE_AXIS));
-        startPanel.add(startTextField);
-        startPanel.add(startButton);
+        startPanel.setLayout(new BorderLayout());
+        startPanel.add(settingsPanel, BorderLayout.CENTER);
+        startPanel.add(startButton, BorderLayout.PAGE_END);
 
-        frame.add(startPanel);
+        frame.add(startPanel); //!!!
         frame.setVisible(true);
         refresh();
+    }
+
+    // MODIFIES: f
+    // EFFECTS: sets location of f to bottom right of screen
+    // adapted from https://stackoverflow.com/questions/50498314/how-can-i-set-jframe-location-at-right-of-screen
+    private static void setLocationToBotRight(JFrame f) {
+        GraphicsConfiguration config = f.getGraphicsConfiguration();
+        Rectangle bounds = config.getBounds();
+        Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(config);
+
+        int x = bounds.x + bounds.width - insets.right - f.getWidth();
+        int y = bounds.y + bounds.height - insets.top - f.getHeight();
+        f.setLocation(x, y);
     }
 
     // MODIFIES: pomodoro, timerPanel
     // EFFECTS: starts a pomodoro
     private void startPomodoro() {
-        // set up new timer
-        pomodoro = new Pomodoro();
+        pomodoro = new Pomodoro(settingsPanel.getNumReps(), settingsPanel.infinite());
         pomodoro.addObserver(this);
         newTimer(PomodoroStatus.WORK);
         pomodoro.start();
@@ -70,6 +88,11 @@ public class PomodoroApp implements Observer, ActionListener {
     // MODIFIES: timerPanel, frame
     // EFFECTS: starts a timer for a pomodoro phase
     private void newTimer(PomodoroStatus pomodoroStatus) {
+        // get inputs
+        int work = settingsPanel.getLengthWork();
+        int shortBreak = settingsPanel.getLengthShortBreak();
+        int longBreak = settingsPanel.getLengthLongBreak();
+
         timerPanel = new TimerPanel(pomodoroStatus);
         frame.add(timerPanel.getPanel());
         timerPanel.addObserver(this);
@@ -78,9 +101,8 @@ public class PomodoroApp implements Observer, ActionListener {
         refresh();
     }
 
-    // REQUIRES: observable object notifies with a PomodoroStatus as an argument
     // MODIFIES: timerPanel, frame
-    // EFFECTS: either creates a new timer or reopens the starting menu
+    // EFFECTS: creates a new timer, reopens the starting menu, or gives user a notification
     @Override
     public void update(Observable o, Object arg) {
         if (o.getClass() == Pomodoro.class) {
@@ -110,14 +132,14 @@ public class PomodoroApp implements Observer, ActionListener {
                     frame.setAlwaysOnTop(false);
                     frame.toBack();
                     refresh();
-
+                    break;
             }
         }
     }
 
-    // MODIFIES: frame
+    // MODIFIES: f
     // EFFECTS: sets frame to be always on top of VM display
-    // modified from https://stackoverflow.com/questions/309023/how-to-bring-a-window-to-the-front
+    // adapted from https://stackoverflow.com/questions/309023/how-to-bring-a-window-to-the-front
     private void frameToFront(JFrame f) {
         int sta = f.getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL;
 
@@ -131,6 +153,7 @@ public class PomodoroApp implements Observer, ActionListener {
     // MODIFIES: frame
     // EFFECTS: repaints the window
     private void refresh() {
+        frame.add(exitButton);
         frame.validate();
         frame.repaint();
     }
@@ -139,7 +162,13 @@ public class PomodoroApp implements Observer, ActionListener {
     // EFFECTS: makes the starting menu invisible and starts a pomodoro
     @Override
     public void actionPerformed(ActionEvent e) {
-        frame.remove(startPanel);
-        startPomodoro();
+        if (e.getSource() == startButton) {
+            if (settingsPanel.allInputsValid()) {
+                frame.remove(startPanel);
+                startPomodoro();
+            }
+        } else if (e.getSource() == exitButton) {
+            System.exit(0);
+        }
     }
 }

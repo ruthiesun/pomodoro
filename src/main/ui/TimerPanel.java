@@ -1,7 +1,6 @@
 package ui;
 
 import model.PomodoroStatus;
-import model.TimerStatus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,15 +30,15 @@ public class TimerPanel extends Observable implements ActionListener {
 
         switch (pomodoroStatus) {
             case WORK:
-                counter = PomodoroApp.WORK_DURATION;
+                counter = PomodoroApp.DEFAULT_WORK_DURATION;
                 message = new JTextField("time to work");
                 break;
             case BREAK:
-                counter = PomodoroApp.BREAK_DURATION;
+                counter = PomodoroApp.DEFAULT_SHORT_BREAK_DURATION;
                 message = new JTextField("time to take a break");
                 break;
             case LONG_BREAK:
-                counter = PomodoroApp.LONG_BREAK_DURATION;
+                counter = PomodoroApp.DEFAULT_LONG_BREAK_DURATION;
                 message = new JTextField("time to take a long break");
                 break;
         }

@@ -1,6 +1,6 @@
 package model;
 
-import ui.PomodoroApp;
+import ui.TimerStatus;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -10,10 +10,14 @@ import java.util.Observer;
  */
 public class Pomodoro extends Observable implements Observer {
     private int numReps; // number of work periods
+    private int numRepsInitial;
     private PomodoroStatus pomodoroStatus; // current pomodoroStatus
+    private boolean infinite;
 
-    public Pomodoro() {
-        numReps = PomodoroApp.NUM_REPS;
+    public Pomodoro(int numReps, boolean infinite) {
+        this.numReps = numReps;
+        this.numRepsInitial = numReps;
+        this.infinite = infinite;
     }
 
     // MODIFIES: numReps, pomodoroStatus
@@ -43,7 +47,12 @@ public class Pomodoro extends Observable implements Observer {
     // EFFECTS: switches to the next pomodoro phase
     private void next() {
         if (numReps <= 0 && (pomodoroStatus != PomodoroStatus.WORK)) { // done the pomodoro
-            pomodoroStatus = PomodoroStatus.DONE;
+            if (infinite) {
+                numReps = numRepsInitial;
+                start();
+            } else {
+                pomodoroStatus = PomodoroStatus.DONE;
+            }
         } else if (pomodoroStatus == PomodoroStatus.WORK) { // just finished a work period
             scheduleBreak();
         } else { // just finished a break period
@@ -53,6 +62,7 @@ public class Pomodoro extends Observable implements Observer {
         notifyObservers(pomodoroStatus);
     }
 
+    // REQUIRES: arg is a TimerStatus
     // MODIFIES: pomodoroStatus
     // EFFECTS: switches to the next pomodoro phase
     @Override
@@ -60,6 +70,7 @@ public class Pomodoro extends Observable implements Observer {
         switch ((TimerStatus) arg) {
             case NOTIF_OFF:
                 next();
+                break;
         }
     }
 }
