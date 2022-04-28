@@ -10,14 +10,18 @@ import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 
-// Manages pomodoros
+/*
+ * Manages pomodoro timers
+ */
 public class PomodoroApp implements Observer, ActionListener {
+    // window dimensions
     public static final int WIDTH = 300;
     public static final int HEIGHT = 200;
 
-    public static final int WORK_DURATION = 3;
-    public static final int BREAK_DURATION = 2;
-    public static final int LONG_BREAK_DURATION = 1;
+    // duration of pomodoro phases in seconds
+    public static final int WORK_DURATION = 10;
+    public static final int BREAK_DURATION = 5;
+    public static final int LONG_BREAK_DURATION = 8;
     public static final int NUM_REPS = 2;
 
     private JFrame frame;
@@ -28,13 +32,12 @@ public class PomodoroApp implements Observer, ActionListener {
     private TimerPanel timerPanel;
     private Pomodoro pomodoro;
 
-    // EFFECTS: constructor
     public PomodoroApp() {
         // set up window
         frame = new JFrame("Pomodoro Timer");
         frame.setMinimumSize(new Dimension(WIDTH, HEIGHT));
 
-        // set up initial contents
+        // set up starting menu contents
         startButton = new JButton("go!");
         startButton.addActionListener(this);
         startTextField = new JTextField("start new pomodoro?");
@@ -49,6 +52,7 @@ public class PomodoroApp implements Observer, ActionListener {
         refresh();
     }
 
+    // MODIFIES: pomodoro, timerPanel
     // EFFECTS: starts a pomodoro
     private void startPomodoro() {
         // set up new timer
@@ -58,13 +62,19 @@ public class PomodoroApp implements Observer, ActionListener {
         pomodoro.start();
     }
 
+    // REQUIRES: pomodoro is initialized
+    // MODIFIES: timerPanel, frame
+    // EFFECTS: starts a timer for a pomodoro phase
     private void newTimer(Status status) {
         timerPanel = new TimerPanel(status);
-        frame.add(timerPanel.panel);
+        frame.add(timerPanel.getPanel());
         timerPanel.addObserver(pomodoro);
         refresh();
     }
 
+    // REQUIRES: observable object notifies with a Status as an argument
+    // MODIFIES: timerPanel, frame
+    // EFFECTS: either creates a new timer or reopens the starting menu
     @Override
     public void update(Observable o, Object arg) {
         switch ((Status) arg) {
@@ -78,18 +88,22 @@ public class PomodoroApp implements Observer, ActionListener {
                 newTimer(Status.LONG_BREAK);
                 break;
             case DONE:
-                timerPanel.panel.setVisible(false);
+                timerPanel.getPanel().setVisible(false);
                 startPanel.setVisible(true);
                 refresh();
                 break;
         }
     }
 
+    // MODIFIES: frame
+    // EFFECTS: repaints the window
     private void refresh() {
         frame.validate();
         frame.repaint();
     }
 
+    // MODIFIES: startPanel
+    // EFFECTS: makes the starting menu invisible and starts a pomodoro
     @Override
     public void actionPerformed(ActionEvent e) {
         System.out.println("button clicked");
