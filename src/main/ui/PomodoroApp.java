@@ -19,10 +19,10 @@ public class PomodoroApp implements Observer, ActionListener {
     public static final int HEIGHT = 200;
 
     // duration of pomodoro phases in seconds
-    public static final int WORK_DURATION = 10;
-    public static final int BREAK_DURATION = 5;
-    public static final int LONG_BREAK_DURATION = 8;
-    public static final int NUM_REPS = 2;
+    public static final int WORK_DURATION = 2;
+    public static final int BREAK_DURATION = 2;
+    public static final int LONG_BREAK_DURATION = 2;
+    public static final int NUM_REPS = 4;
 
     private JFrame frame;
     private JPanel startPanel;
@@ -36,6 +36,7 @@ public class PomodoroApp implements Observer, ActionListener {
         // set up window
         frame = new JFrame("Pomodoro Timer");
         frame.setMinimumSize(new Dimension(WIDTH, HEIGHT));
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // set up starting menu contents
         startButton = new JButton("go!");
@@ -69,6 +70,7 @@ public class PomodoroApp implements Observer, ActionListener {
         timerPanel = new TimerPanel(status);
         frame.add(timerPanel.getPanel());
         timerPanel.addObserver(pomodoro);
+        timerPanel.refresh();
         refresh();
     }
 
@@ -77,6 +79,7 @@ public class PomodoroApp implements Observer, ActionListener {
     // EFFECTS: either creates a new timer or reopens the starting menu
     @Override
     public void update(Observable o, Object arg) {
+        frame.remove(timerPanel.getPanel());
         switch ((Status) arg) {
             case WORK:
                 newTimer(Status.WORK);
@@ -88,8 +91,7 @@ public class PomodoroApp implements Observer, ActionListener {
                 newTimer(Status.LONG_BREAK);
                 break;
             case DONE:
-                timerPanel.getPanel().setVisible(false);
-                startPanel.setVisible(true);
+                frame.add(startPanel);
                 refresh();
                 break;
         }
@@ -106,8 +108,7 @@ public class PomodoroApp implements Observer, ActionListener {
     // EFFECTS: makes the starting menu invisible and starts a pomodoro
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println("button clicked");
-        startPanel.setVisible(false);
+        frame.remove(startPanel);
         startPomodoro();
     }
 }

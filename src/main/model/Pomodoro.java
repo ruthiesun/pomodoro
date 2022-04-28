@@ -42,8 +42,7 @@ public class Pomodoro extends Observable implements Observer {
     // MODIFIES: numReps, status
     // EFFECTS: switches to the next pomodoro phase
     private void next() {
-        System.out.println("pomodoro notified");
-        if (numReps < 0 && (status != Status.WORK)) { // done the pomodoro
+        if (numReps <= 0 && (status != Status.WORK)) { // done the pomodoro
             status = Status.DONE;
         } else if (status == Status.WORK) { // just finished a work period
             scheduleBreak();

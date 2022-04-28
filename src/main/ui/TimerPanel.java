@@ -86,7 +86,6 @@ public class TimerPanel extends Observable implements ActionListener {
             setChanged();
             notifyObservers(); // tell observers that user has dismissed notif
         } else { // timer has ticked
-            System.out.println(counter);
             if (counter==0) {
                 displayTime();
                 displayNotif();
@@ -106,7 +105,7 @@ public class TimerPanel extends Observable implements ActionListener {
 
     // MODIFIES: panel
     // EFFECTS: repaints panel
-    private void refresh() {
+    public void refresh() {
         panel.removeAll();
         panel.add(time);
         panel.add(message);
