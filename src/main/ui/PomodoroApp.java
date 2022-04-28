@@ -19,7 +19,7 @@ public class PomodoroApp implements Observer, ActionListener {
     public static final int HEIGHT = 200;
 
     // duration of pomodoro phases in seconds
-    public static final int WORK_DURATION = 2;
+    public static final int WORK_DURATION = 66;
     public static final int BREAK_DURATION = 2;
     public static final int LONG_BREAK_DURATION = 2;
     public static final int NUM_REPS = 4;

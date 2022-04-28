@@ -14,7 +14,7 @@ import java.util.Observable;
 public class TimerPanel extends Observable implements ActionListener {
     public static final int SECOND = 1000; // 1 second in ms
 
-    private int counter;
+    private int counter; // number of seconds left
 
     private JPanel panel;
     private JTextField time;
@@ -68,7 +68,23 @@ public class TimerPanel extends Observable implements ActionListener {
     // MODIFIES: time
     // EFFECTS: updates time
     private void displayTime() {
-        time = new JTextField("count: " + Integer.toString(counter));
+        int numMin = counter/60;
+        int numSec = counter%60;
+
+        String timeAsString = addZeroes(numMin) + " : " + addZeroes(numSec);
+        time = new JTextField(timeAsString);
+    }
+
+    // EFFECTS: return given number prepended by 0s such at there are at least two digits in the returned string
+    private String addZeroes(int n) {
+        if (n < 10) {
+            if (n == 0) {
+                return "00";
+            }
+            return "0" + n;
+        } else {
+            return Integer.toString(n);
+        }
     }
 
     // MODFIIES: message, button
