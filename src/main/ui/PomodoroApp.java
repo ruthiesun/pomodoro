@@ -14,7 +14,7 @@ import java.util.Observer;
  * Manages pomodoro timers
  */
 public class PomodoroApp implements Observer, ActionListener {
-    // window dimensions
+    // minimum window dimensions
     public static final int WIDTH = 400;
     public static final int HEIGHT = 150;
 
@@ -33,6 +33,7 @@ public class PomodoroApp implements Observer, ActionListener {
     private TimerPanel timerPanel;
     private Pomodoro pomodoro;
 
+    // EFFECTS: starts the pomodoro app
     public PomodoroApp() {
         // set up window
         frame = new JFrame("Pomodoro Timer");
@@ -76,7 +77,7 @@ public class PomodoroApp implements Observer, ActionListener {
     }
 
     // MODIFIES: pomodoro, timerPanel
-    // EFFECTS: starts a pomodoro
+    // EFFECTS: starts a pomodoro based on current state of the settings panel
     private void startPomodoro() {
         pomodoro = new Pomodoro(settingsPanel.getNumReps(), settingsPanel.infinite());
         pomodoro.addObserver(this);
@@ -88,12 +89,22 @@ public class PomodoroApp implements Observer, ActionListener {
     // MODIFIES: timerPanel, frame
     // EFFECTS: starts a timer for a pomodoro phase
     private void newTimer(PomodoroStatus pomodoroStatus) {
-        // get inputs
-        int work = settingsPanel.getLengthWork();
-        int shortBreak = settingsPanel.getLengthShortBreak();
-        int longBreak = settingsPanel.getLengthLongBreak();
+        switch(pomodoroStatus) {
+            case WORK:
+                int work = settingsPanel.getLengthWork();
+                timerPanel = new TimerPanel(pomodoroStatus, work);
+                break;
+            case BREAK:
+                int shortBreak = settingsPanel.getLengthShortBreak();
+                timerPanel = new TimerPanel(pomodoroStatus, shortBreak);
+                break;
+            case LONG_BREAK:
+                int longBreak = settingsPanel.getLengthLongBreak();
+                timerPanel = new TimerPanel(pomodoroStatus, longBreak);
+                break;
+        }
 
-        timerPanel = new TimerPanel(pomodoroStatus);
+
         frame.add(timerPanel.getPanel());
         timerPanel.addObserver(this);
         timerPanel.addObserver(pomodoro);

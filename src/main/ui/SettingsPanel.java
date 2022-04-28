@@ -3,6 +3,9 @@ package ui;
 import javax.swing.*;
 import java.awt.*;
 
+/*
+ *  Panel with customization settings for a pomodoro
+ */
 public class SettingsPanel extends JPanel {
     private JCheckBox loopCheckBox;
     private JTextField lengthWorkField;
@@ -24,6 +27,7 @@ public class SettingsPanel extends JPanel {
         setup();
     }
 
+    // EFFECTS: helper for constructor; initializes fields
     private void initFields() {
         loopCheckBox = new JCheckBox();
         lengthWorkField = new JTextField();
@@ -38,6 +42,7 @@ public class SettingsPanel extends JPanel {
         numRepsFieldLabel = new JLabel("number of repetitions: ");
     }
 
+    // EFFECTS: helper for constructor; sets up GUI components
     private void setup() {
         JPanel loopCheckPanel = new JPanel();
         loopCheckPanel.setLayout(new FlowLayout());
@@ -59,6 +64,10 @@ public class SettingsPanel extends JPanel {
         this.add(textFieldPanel);
     }
 
+    // REQUIRES: f is a field of this
+    // MODIFIES: f
+    // EFFECTS: returns true and removes highlight if field can be converted to an integer;
+    //          returns false and highlights field otherwise
     private boolean fieldValid(JTextField f) {
         String input = f.getText();
         if (input.length() == 0) {
@@ -75,46 +84,54 @@ public class SettingsPanel extends JPanel {
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: for all fields in this,
+    //              removes highlight if field can be converted to an integer; highlights field otherwise
+    //          return true if all fields can be converted to an integer, false otherwise
     public boolean allInputsValid() {
-        boolean valid = fieldValid(lengthWorkField) && fieldValid(lengthShortBreakField) && fieldValid(lengthLongBreakField);
-        if (!loopCheckBox.isSelected()) {
-            valid = valid && fieldValid(numRepsField);
-        }
+        boolean f1 = fieldValid(lengthWorkField);
+        boolean f2 = fieldValid(lengthShortBreakField);
+        boolean f3 = fieldValid(lengthLongBreakField);
+        boolean f4 = fieldValid(numRepsField);
 
-        return valid;
+        return f1 && f2 && f3 && f4;
     }
 
     // REQUIRES: input is empty or can be parsed to an int
+    // EFFECTS: returns the value inputted by the user or the default work length if no value was entered
     public int getLengthWork () {
         String input = lengthWorkField.getText();
         if (input.length() == 0) {
             return PomodoroApp.DEFAULT_WORK_DURATION;
         } else {
-            return Integer.parseInt(input);
+            return Integer.parseInt(input)*60;
         }
     }
 
     // REQUIRES: input is empty or can be parsed to an int
+    // EFFECTS: returns the value inputted by the user or the default short break length if no value was entered
     public int getLengthShortBreak() {
         String input = lengthShortBreakField.getText();
         if (input.length() == 0) {
             return PomodoroApp.DEFAULT_SHORT_BREAK_DURATION;
         } else {
-            return Integer.parseInt(input);
+            return Integer.parseInt(input)*60;
         }
     }
 
     // REQUIRES: input is empty or can be parsed to an int
+    // EFFECTS: returns the value inputted by the user or the default long break length if no value was entered
     public int getLengthLongBreak() {
         String input = lengthLongBreakField.getText();
         if (input.length() == 0) {
             return PomodoroApp.DEFAULT_LONG_BREAK_DURATION;
         } else {
-            return Integer.parseInt(input);
+            return Integer.parseInt(input)*60;
         }
     }
 
     // REQUIRES: input is empty or can be parsed to an int
+    // EFFECTS: returns the value inputted by the user or the default number of reps if no value was entered
     public int getNumReps() {
         String input = numRepsField.getText();
         if (input.length() == 0) {
@@ -124,6 +141,7 @@ public class SettingsPanel extends JPanel {
         }
     }
 
+    // EFFECTS: returns true if the user has indicated that the pomodoro should loop infinitely, false otherwise
     public boolean infinite() {
         return loopCheckBox.isSelected();
     }

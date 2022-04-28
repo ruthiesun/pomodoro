@@ -6,7 +6,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 /*
- *  Representation of a single pomodoro.
+ *  Representation of a single pomodoro
  */
 public class Pomodoro extends Observable implements Observer {
     private int numReps; // number of work periods
@@ -14,6 +14,7 @@ public class Pomodoro extends Observable implements Observer {
     private PomodoroStatus pomodoroStatus; // current pomodoroStatus
     private boolean infinite;
 
+    // EFFECTS: sets numReps and whether the pomodoro runs infinitely based on arguments
     public Pomodoro(int numReps, boolean infinite) {
         this.numReps = numReps;
         this.numRepsInitial = numReps;

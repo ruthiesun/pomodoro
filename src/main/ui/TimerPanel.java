@@ -25,25 +25,30 @@ public class TimerPanel extends Observable implements ActionListener {
 
     private Timer timer;
 
-    public TimerPanel(PomodoroStatus pomodoroStatus) {
+    // REQUIRES: duration is in seconds
+    // EFFECTS: starts a timer according to the give pomodoro phase and duration
+    public TimerPanel(PomodoroStatus pomodoroStatus, int duration) {
         super();
 
         switch (pomodoroStatus) {
             case WORK:
-                counter = PomodoroApp.DEFAULT_WORK_DURATION;
                 message = new JTextField("time to work");
                 break;
             case BREAK:
-                counter = PomodoroApp.DEFAULT_SHORT_BREAK_DURATION;
                 message = new JTextField("time to take a break");
                 break;
             case LONG_BREAK:
-                counter = PomodoroApp.DEFAULT_LONG_BREAK_DURATION;
                 message = new JTextField("time to take a long break");
                 break;
         }
 
-        time = new JTextField(counter);
+        counter = duration;
+        setup();
+        startTimer();
+    }
+
+    // EFFECTS: sets up GUI elements
+    private void setup() {
         nextButton = new JButton("next");
         nextButton.addActionListener(this);
         nextButton.setVisible(false);
@@ -61,9 +66,8 @@ public class TimerPanel extends Observable implements ActionListener {
         panel.add(buttonPanel);
 
         panel.setVisible(true);
-
-        startTimer();
     }
+
 
     // MODIFIES: timer
     // EFFECTS: starts the Swing timer
