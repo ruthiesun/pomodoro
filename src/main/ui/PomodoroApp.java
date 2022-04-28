@@ -1,7 +1,8 @@
 package ui;
 
 import model.Pomodoro;
-import model.Status;
+import model.PomodoroStatus;
+import model.TimerStatus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,13 +16,13 @@ import java.util.Observer;
  */
 public class PomodoroApp implements Observer, ActionListener {
     // window dimensions
-    public static final int WIDTH = 300;
+    public static final int WIDTH = 400;
     public static final int HEIGHT = 200;
 
     // duration of pomodoro phases in seconds
-    public static final int WORK_DURATION = 66;
-    public static final int BREAK_DURATION = 2;
-    public static final int LONG_BREAK_DURATION = 2;
+    public static final int WORK_DURATION = 5;//25*60;
+    public static final int BREAK_DURATION = 5;//*60;
+    public static final int LONG_BREAK_DURATION = 15*60;
     public static final int NUM_REPS = 4;
 
     private JFrame frame;
@@ -37,6 +38,8 @@ public class PomodoroApp implements Observer, ActionListener {
         frame = new JFrame("Pomodoro Timer");
         frame.setMinimumSize(new Dimension(WIDTH, HEIGHT));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setUndecorated(true);
+        frame.setOpacity(0.9F);
 
         // set up starting menu contents
         startButton = new JButton("go!");
@@ -59,42 +62,70 @@ public class PomodoroApp implements Observer, ActionListener {
         // set up new timer
         pomodoro = new Pomodoro();
         pomodoro.addObserver(this);
-        newTimer(Status.WORK);
+        newTimer(PomodoroStatus.WORK);
         pomodoro.start();
     }
 
     // REQUIRES: pomodoro is initialized
     // MODIFIES: timerPanel, frame
     // EFFECTS: starts a timer for a pomodoro phase
-    private void newTimer(Status status) {
-        timerPanel = new TimerPanel(status);
+    private void newTimer(PomodoroStatus pomodoroStatus) {
+        timerPanel = new TimerPanel(pomodoroStatus);
         frame.add(timerPanel.getPanel());
+        timerPanel.addObserver(this);
         timerPanel.addObserver(pomodoro);
         timerPanel.refresh();
         refresh();
     }
 
-    // REQUIRES: observable object notifies with a Status as an argument
+    // REQUIRES: observable object notifies with a PomodoroStatus as an argument
     // MODIFIES: timerPanel, frame
     // EFFECTS: either creates a new timer or reopens the starting menu
     @Override
     public void update(Observable o, Object arg) {
-        frame.remove(timerPanel.getPanel());
-        switch ((Status) arg) {
-            case WORK:
-                newTimer(Status.WORK);
-                break;
-            case BREAK:
-                newTimer(Status.BREAK);
-                break;
-            case LONG_BREAK:
-                newTimer(Status.LONG_BREAK);
-                break;
-            case DONE:
-                frame.add(startPanel);
-                refresh();
-                break;
+        if (o.getClass() == Pomodoro.class) {
+            frame.remove(timerPanel.getPanel());
+            switch ((PomodoroStatus) arg) {
+                case WORK:
+                    newTimer(PomodoroStatus.WORK);
+                    break;
+                case BREAK:
+                    newTimer(PomodoroStatus.BREAK);
+                    break;
+                case LONG_BREAK:
+                    newTimer(PomodoroStatus.LONG_BREAK);
+                    break;
+                case DONE:
+                    frame.add(startPanel);
+                    refresh();
+                    break;
+            }
+        } else if (o.getClass() == TimerPanel.class) {
+            switch ((TimerStatus) arg) {
+                case NOTIF_ON:
+                    frameToFront(frame);
+                    refresh();
+                    break;
+                case NOTIF_DISMISSED:
+                    frame.setAlwaysOnTop(false);
+                    frame.toBack();
+                    refresh();
+
+            }
         }
+    }
+
+    // MODIFIES: frame
+    // EFFECTS: sets frame to be always on top of VM display
+    // modified from https://stackoverflow.com/questions/309023/how-to-bring-a-window-to-the-front
+    private void frameToFront(JFrame f) {
+        int sta = f.getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL;
+
+        f.setExtendedState(sta);
+        f.setAlwaysOnTop(true);
+        f.toFront();
+        f.requestFocus();
+        //f.setAlwaysOnTop(false);
     }
 
     // MODIFIES: frame

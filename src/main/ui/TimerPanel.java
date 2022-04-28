@@ -1,6 +1,7 @@
 package ui;
 
-import model.Status;
+import model.PomodoroStatus;
+import model.TimerStatus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,14 +20,16 @@ public class TimerPanel extends Observable implements ActionListener {
     private JPanel panel;
     private JTextField time;
     private JTextField message;
-    private JButton button;
+    private JButton nextButton;
+    private JButton dismissButton;
+    private JPanel buttonPanel;
 
     private Timer timer;
 
-    public TimerPanel(Status status) {
+    public TimerPanel(PomodoroStatus pomodoroStatus) {
         super();
 
-        switch (status) {
+        switch (pomodoroStatus) {
             case WORK:
                 counter = PomodoroApp.WORK_DURATION;
                 message = new JTextField("time to work");
@@ -42,15 +45,21 @@ public class TimerPanel extends Observable implements ActionListener {
         }
 
         time = new JTextField(counter);
-        button = new JButton("next");
-        button.addActionListener(this);
-        button.setVisible(false);
+        nextButton = new JButton("next");
+        nextButton.addActionListener(this);
+        nextButton.setVisible(false);
+        dismissButton = new JButton("dismiss");
+        dismissButton.addActionListener(this);
+        dismissButton.setVisible(false);
+        buttonPanel = new JPanel(new GridLayout(1,0));
+        buttonPanel.add(nextButton);
+        buttonPanel.add(dismissButton);
 
         panel = new JPanel();
         panel.setLayout(new GridLayout(0,1));
         panel.add(time);
         panel.add(message);
-        panel.add(button);
+        panel.add(buttonPanel);
 
         panel.setVisible(true);
 
@@ -87,24 +96,30 @@ public class TimerPanel extends Observable implements ActionListener {
         }
     }
 
-    // MODFIIES: message, button
+    // MODIFIES: message, button
     // EFFECTS: makes button visible and updates message
     private void displayNotif() {
         message = new JTextField("done this phase");
-        button.setVisible(true);
+        nextButton.setVisible(true);
+        dismissButton.setVisible(true);
     }
 
     // MODIFIES: counter, time, message, filler, button, panel
     // EFFECTS: if button was pressed, notify observers. Else, update display
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == button) {
+        if (e.getSource() == nextButton) {
             setChanged();
-            notifyObservers(); // tell observers that user has dismissed notif
+            notifyObservers(TimerStatus.NOTIF_OFF); // tell observers that user has asked for the next phase
+        } else if (e.getSource() == dismissButton) {
+            setChanged();
+            notifyObservers(TimerStatus.NOTIF_DISMISSED);
         } else { // timer has ticked
             if (counter==0) {
                 displayTime();
                 displayNotif();
+                setChanged();
+                notifyObservers(TimerStatus.NOTIF_ON);
                 timer.stop();
             } else if (counter>0){
                 displayTime();
@@ -125,7 +140,7 @@ public class TimerPanel extends Observable implements ActionListener {
         panel.removeAll();
         panel.add(time);
         panel.add(message);
-        panel.add(button);
+        panel.add(buttonPanel);
         panel.validate();
         panel.repaint();
     }

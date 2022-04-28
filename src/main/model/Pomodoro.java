@@ -10,53 +10,56 @@ import java.util.Observer;
  */
 public class Pomodoro extends Observable implements Observer {
     private int numReps; // number of work periods
-    private Status status; // current status
+    private PomodoroStatus pomodoroStatus; // current pomodoroStatus
 
     public Pomodoro() {
         numReps = PomodoroApp.NUM_REPS;
     }
 
-    // MODIFIES: numReps, status
+    // MODIFIES: numReps, pomodoroStatus
     // EFFECTS: starts the pomodoro with a work phase
     public void start() {
         scheduleWork();
     }
 
-    // MODIFIES: numReps, status
+    // MODIFIES: numReps, pomodoroStatus
     // EFFECTS: starts a work phase
     private void scheduleWork() {
         numReps--;
-        status = Status.WORK;
+        pomodoroStatus = PomodoroStatus.WORK;
     }
 
-    // MODIFIES: status
+    // MODIFIES: pomodoroStatus
     // EFFECTS: starts a break phase
     private void scheduleBreak() {
         if (numReps <= 0) {
-            status = Status.LONG_BREAK;
+            pomodoroStatus = PomodoroStatus.LONG_BREAK;
         } else {
-            status = Status.BREAK;
+            pomodoroStatus = PomodoroStatus.BREAK;
         }
     }
 
-    // MODIFIES: numReps, status
+    // MODIFIES: numReps, pomodoroStatus
     // EFFECTS: switches to the next pomodoro phase
     private void next() {
-        if (numReps <= 0 && (status != Status.WORK)) { // done the pomodoro
-            status = Status.DONE;
-        } else if (status == Status.WORK) { // just finished a work period
+        if (numReps <= 0 && (pomodoroStatus != PomodoroStatus.WORK)) { // done the pomodoro
+            pomodoroStatus = PomodoroStatus.DONE;
+        } else if (pomodoroStatus == PomodoroStatus.WORK) { // just finished a work period
             scheduleBreak();
         } else { // just finished a break period
             scheduleWork();
         }
         setChanged();
-        notifyObservers(status);
+        notifyObservers(pomodoroStatus);
     }
 
-    // MODIFIES: status
+    // MODIFIES: pomodoroStatus
     // EFFECTS: switches to the next pomodoro phase
     @Override
     public void update(Observable o, Object arg) {
-        next();
+        switch ((TimerStatus) arg) {
+            case NOTIF_OFF:
+                next();
+        }
     }
 }
