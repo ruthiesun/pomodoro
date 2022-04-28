@@ -15,24 +15,21 @@ public class PomodoroApp implements Observer, ActionListener {
     public static final int WIDTH = 300;
     public static final int HEIGHT = 200;
 
-    public static final int WORK_DURATION = 25;
-    public static final int BREAK_DURATION = 5;
-    public static final int LONG_BREAK_DURATION = 15;
-    public static final int NUM_REPS = 4;
+    public static final int WORK_DURATION = 3;
+    public static final int BREAK_DURATION = 2;
+    public static final int LONG_BREAK_DURATION = 1;
+    public static final int NUM_REPS = 2;
 
-    JFrame frame;
-    JPanel startPanel;
-    JPanel timerPanel;
-    JButton startButton;
-    JTextField startTextField;
+    private JFrame frame;
+    private JPanel startPanel;
+    private JButton startButton;
+    private JTextField startTextField;
 
+    private TimerPanel timerPanel;
     private Pomodoro pomodoro;
 
+    // EFFECTS: constructor
     public PomodoroApp() {
-        setup();
-    }
-
-    private void setup() {
         // set up window
         frame = new JFrame("Pomodoro Timer");
         frame.setMinimumSize(new Dimension(WIDTH, HEIGHT));
@@ -49,30 +46,48 @@ public class PomodoroApp implements Observer, ActionListener {
 
         frame.add(startPanel);
         frame.setVisible(true);
+        refresh();
     }
 
+    // EFFECTS: starts a pomodoro
     private void startPomodoro() {
-        // set up timer
-        TimerPanel timerPanel = new TimerPanel();
+        // set up new timer
         pomodoro = new Pomodoro();
         pomodoro.addObserver(this);
-        pomodoro.addObserver(timerPanel);
-        timerPanel.addObserver(this);
+        newTimer(Status.WORK);
         pomodoro.start();
+    }
+
+    private void newTimer(Status status) {
+        timerPanel = new TimerPanel(status);
+        frame.add(timerPanel.panel);
+        timerPanel.addObserver(pomodoro);
+        refresh();
     }
 
     @Override
     public void update(Observable o, Object arg) {
         switch ((Status) arg) {
-            case DONE_ALL:
-                System.out.println("done one pomodoro");
-                startPanel.setVisible(true);
+            case WORK:
+                newTimer(Status.WORK);
                 break;
-            case USER_DISMISSED:
-                System.out.println("user dismissed notif so start next timer");
-                pomodoro.next();
+            case BREAK:
+                newTimer(Status.BREAK);
+                break;
+            case LONG_BREAK:
+                newTimer(Status.LONG_BREAK);
+                break;
+            case DONE:
+                timerPanel.panel.setVisible(false);
+                startPanel.setVisible(true);
+                refresh();
                 break;
         }
+    }
+
+    private void refresh() {
+        frame.validate();
+        frame.repaint();
     }
 
     @Override
