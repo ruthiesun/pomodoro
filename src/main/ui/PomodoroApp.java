@@ -22,6 +22,7 @@ public class PomodoroApp implements Observer, ActionListener {
 
     JFrame frame;
     JPanel startPanel;
+    JPanel timerPanel;
     JButton startButton;
     JTextField startTextField;
 
@@ -51,20 +52,26 @@ public class PomodoroApp implements Observer, ActionListener {
     }
 
     private void startPomodoro() {
-        // set up pomodoro
+        // set up timer
         TimerPanel timerPanel = new TimerPanel();
         pomodoro = new Pomodoro();
-
-        // run pomodoro
-        pomodoro.addObserver(timerPanel);
         pomodoro.addObserver(this);
+        pomodoro.addObserver(timerPanel);
+        timerPanel.addObserver(this);
         pomodoro.start();
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        if ((Status) arg == Status.DONE_ALL) {
-            System.out.println("done one pomodoro");
+        switch ((Status) arg) {
+            case DONE_ALL:
+                System.out.println("done one pomodoro");
+                startPanel.setVisible(true);
+                break;
+            case USER_DISMISSED:
+                System.out.println("user dismissed notif so start next timer");
+                pomodoro.next();
+                break;
         }
     }
 

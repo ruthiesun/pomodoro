@@ -3,7 +3,7 @@ package model;
 import java.util.TimerTask;
 
 /*
- *  Abstract class for work and break periods
+ *  Class for work and break periods
  */
 public abstract class TimerTaskBase extends TimerTask {
     private int counter;

@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 
-public class TimerPanel implements ActionListener, Observer{
+public class TimerPanel extends Observable implements ActionListener, Observer {
     JPanel panel;
     JTextField time;
     JTextField message;
@@ -32,9 +32,13 @@ public class TimerPanel implements ActionListener, Observer{
         button.addActionListener(this);
     }
 
+    private void updateTimer() {
+
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        notifyObservers(Status.USER_DISMISSED);
     }
 
     @Override

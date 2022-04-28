@@ -10,7 +10,7 @@ import java.util.Timer;
  *  Representation of a single pomodoro.
  *   Schedules pomodoro components according to default settings and notifies PomodoroApp once everything is done.
  */
-public class Pomodoro extends Observable implements Observer {
+public class Pomodoro implements Observer {
     private Timer timer;
 
     private int workDuration; // duration of work period in minutes
@@ -18,8 +18,8 @@ public class Pomodoro extends Observable implements Observer {
     private int longBreakDuration; // duration of long break period in minutes
     private int numReps; // number of work periods
     private boolean currentlyWorking;
-    private static Work workTimer;
-    private static Break breakTimer;
+    //public static Work workTimer;
+    //public static Break breakTimer;
 
     // EFFECTS: sets taskName to name and set default times for work, breaks, and repetitions
     public Pomodoro() {
@@ -72,10 +72,13 @@ public class Pomodoro extends Observable implements Observer {
 
     }
 
+    public void updateTime() {
+
+    }
+
     // MODIFIES: numReps, workTimer, breakTimer
     // EFFECTS: watches for notification dismissals in GUI and schedules next appropriate task
-    @Override
-    public void update(Observable o, Object arg) {
+    public void next() {
         // if user dismissed notif...
         if (numReps < 0 && !currentlyWorking) { // done the pomodoro
             workTimer.cancel();
@@ -88,5 +91,10 @@ public class Pomodoro extends Observable implements Observer {
             breakTimer.cancel();
             scheduleWork();
         }
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+
     }
 }
