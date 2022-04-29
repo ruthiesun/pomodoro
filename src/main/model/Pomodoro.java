@@ -69,7 +69,7 @@ public class Pomodoro extends Observable implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         switch ((TimerStatus) arg) {
-            case NOTIF_OFF:
+            case NOTIF_NEXT:
                 next();
                 break;
         }

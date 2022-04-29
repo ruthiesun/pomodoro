@@ -100,7 +100,11 @@ public class SettingsPanel extends JPanel {
         }
 
         try {
-            Integer.parseInt(input);
+            int i = Integer.parseInt(input);
+            if (i < 1) {
+                f.setBackground(Color.yellow);
+                return false;
+            }
             f.setBackground(Color.white);
             return true;
         } catch (NumberFormatException ex) {
@@ -123,24 +127,27 @@ public class SettingsPanel extends JPanel {
     }
 
     // REQUIRES: input is empty or can be parsed to an int
-    // EFFECTS: returns the value inputted by the user
+    // EFFECTS: returns the value inputted by the user, converted to seconds
     public int getLengthWork () {
-        String input = lengthWorkField.getText();
-        return Integer.parseInt(input)*60;
+        return 6;
+        //String input = lengthWorkField.getText();
+        //return Integer.parseInt(input)*60;
     }
 
     // REQUIRES: input is empty or can be parsed to an int
-    // EFFECTS: returns the value inputted by the user
+    // EFFECTS: returns the value inputted by the user, converted to seconds
     public int getLengthShortBreak() {
-        String input = lengthShortBreakField.getText();
-        return Integer.parseInt(input)*60;
+        return 5;
+        //String input = lengthShortBreakField.getText();
+        //return Integer.parseInt(input)*60;
     }
 
     // REQUIRES: input is empty or can be parsed to an int
-    // EFFECTS: returns the value inputted by the user
+    // EFFECTS: returns the value inputted by the user, converted to seconds
     public int getLengthLongBreak() {
-        String input = lengthLongBreakField.getText();
-        return Integer.parseInt(input)*60;
+        return 4;
+        //String input = lengthLongBreakField.getText();
+        //return Integer.parseInt(input)*60;
     }
 
     // REQUIRES: input is empty or can be parsed to an int

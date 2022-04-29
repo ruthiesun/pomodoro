@@ -22,7 +22,8 @@ public class TimerPanel extends Observable implements ActionListener {
     private JLabel message;
     private JButton nextButton;
     private JButton dismissButton;
-    private JPanel buttonPanel;
+
+    private GridBagConstraints gbc;
 
     private Timer timer;
 
@@ -54,26 +55,36 @@ public class TimerPanel extends Observable implements ActionListener {
         panel = new JPanel();
 
         time = new JLabel("00:00");
-        time.setFont(new Font(time.getFont().getFontName(), Font.BOLD, time.getFont().getSize() * 3));
+        time.setFont(getBigBoldFont(time.getFont()));
 
-        nextButton = new JButton("next");
+        nextButton = new JButton("Next");
         nextButton.setBackground(PomodoroApp.COLOUR_START);
         nextButton.addActionListener(this);
-        nextButton.setVisible(false);
-        dismissButton = new JButton("dismiss");
+        toggleButton(nextButton);
+        dismissButton = new JButton("Dismiss");
         dismissButton.setBackground(PomodoroApp.COLOUR_NEUTRAL);
         dismissButton.addActionListener(this);
-        dismissButton.setVisible(false);
-        buttonPanel = new JPanel(new GridLayout(1,0));
-        buttonPanel.add(nextButton);
-        buttonPanel.add(dismissButton);
+        toggleButton(dismissButton);
 
-        panel.setLayout(new GridLayout(0,1));
-        panel.add(time);
-        panel.add(message);
-        panel.add(buttonPanel);
+        panel.setLayout(new GridBagLayout());
+        gbc = new GridBagConstraints();
+        refresh();
 
         panel.setVisible(true);
+    }
+
+    // MODIFIES: b
+    // EFFECTS: changes b such that nothing happens when the user clicks it and it appears greyed out
+    private void toggleButton(JButton b) {
+        b.setBackground(PomodoroApp.COLOUR_NEUTRAL);
+        b.removeActionListener(this);
+    }
+
+    // MODIFIES: b
+    // EFFECTS: changes b such that an event is fired when the user clickes it and its colour is set to c
+    private void toggleButton(JButton b, Color c) {
+        b.setBackground(c);
+        b.addActionListener(this);
     }
 
 
@@ -92,8 +103,12 @@ public class TimerPanel extends Observable implements ActionListener {
         int numSec = counter%60;
 
         String timeAsString = addZeroes(numMin) + ":" + addZeroes(numSec);
-        time = new JLabel(timeAsString);
-        time.setFont(new Font(time.getFont().getFontName(), Font.BOLD, time.getFont().getSize() * 3));
+        time.setText(timeAsString);
+    }
+
+    // EFFECTS: returns bold and larger version of given font
+    private Font getBigBoldFont(Font f) {
+        return new Font(f.getFontName(), Font.BOLD, f.getSize() * 4);
     }
 
     // EFFECTS: return given number prepended by 0s such at there are at least two digits in the returned string
@@ -113,14 +128,17 @@ public class TimerPanel extends Observable implements ActionListener {
     private void displayNotif() {
         switch (pomodoroStatus) {
             case WORK:
-                message = new JLabel("Time to take a break");
+                message.setText("Time to take a break");
                 break;
-            default:
-                message = new JLabel("Time to work");
+            case BREAK:
+                message.setText("Time to work");
+                break;
+            case LONG_BREAK:
+                message.setText("Completed pomodoro!");
                 break;
         }
-        nextButton.setVisible(true);
-        dismissButton.setVisible(true);
+        toggleButton(nextButton, PomodoroApp.COLOUR_START);
+        toggleButton(dismissButton, PomodoroApp.COLOUR_NEUTRAL);
     }
 
     // MODIFIES: counter, time, message, filler, button, panel
@@ -129,7 +147,7 @@ public class TimerPanel extends Observable implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == nextButton) {
             setChanged();
-            notifyObservers(TimerStatus.NOTIF_OFF); // tell observers that user has asked for the next phase
+            notifyObservers(TimerStatus.NOTIF_NEXT); // tell observers that user has asked for the next phase
         } else if (e.getSource() == dismissButton) {
             setChanged();
             notifyObservers(TimerStatus.NOTIF_DISMISSED);
@@ -153,13 +171,34 @@ public class TimerPanel extends Observable implements ActionListener {
         return panel;
     }
 
+    // EFFECTS: returns true if next period is a break
+    public boolean goingOnBreak() {
+        return pomodoroStatus == PomodoroStatus.WORK;
+    }
+
     // MODIFIES: panel
     // EFFECTS: repaints panel
     public void refresh() {
-        panel.removeAll();
-        panel.add(time);
-        panel.add(message);
-        panel.add(buttonPanel);
+        panel.remove(time);
+        panel.remove(message);
+        panel.remove(nextButton);
+        panel.remove(dismissButton);
+
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx = 0;
+
+        gbc.gridwidth = 2;
+        gbc.gridy = 0;
+        panel.add(time, gbc);
+        gbc.gridy = 1;
+        panel.add(message, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.gridy = 2;
+        panel.add(nextButton, gbc);
+        gbc.gridx = 1;
+        panel.add(dismissButton, gbc);
+
         panel.validate();
         panel.repaint();
     }

@@ -32,6 +32,7 @@ public class PomodoroApp implements Observer, ActionListener {
 
     private TimerPanel timerPanel;
     private Pomodoro pomodoro;
+    private PomodoroStatus pomodoroStatus;
 
     private GridBagConstraints gbc;
 
@@ -65,7 +66,7 @@ public class PomodoroApp implements Observer, ActionListener {
     private void setupStartMenu() {
         settingsPanel = new SettingsPanel();
 
-        startButton = new JButton("go!");
+        startButton = new JButton("Go!");
         startButton.setBackground(PomodoroApp.COLOUR_START);
         startButton.addActionListener(this);
 
@@ -101,6 +102,7 @@ public class PomodoroApp implements Observer, ActionListener {
     // MODIFIES: timerPanel, frame
     // EFFECTS: starts a timer for a pomodoro phase
     private void newTimer(PomodoroStatus pomodoroStatus) {
+        this.pomodoroStatus = pomodoroStatus;
         switch(pomodoroStatus) {
             case WORK:
                 int work = settingsPanel.getLengthWork();
@@ -131,26 +133,33 @@ public class PomodoroApp implements Observer, ActionListener {
             frame.remove(timerPanel.getPanel());
             switch ((PomodoroStatus) arg) {
                 case WORK:
+                    frame.setAlwaysOnTop(false);
                     newTimer(PomodoroStatus.WORK);
                     break;
                 case BREAK:
+                    frame.setAlwaysOnTop(true);
                     newTimer(PomodoroStatus.BREAK);
                     break;
                 case LONG_BREAK:
+                    frame.setAlwaysOnTop(true);
                     newTimer(PomodoroStatus.LONG_BREAK);
                     break;
                 case DONE:
+                    frame.setAlwaysOnTop(false);
                     frame.remove(exitButton);
                     addFrameComponents(startPanel);
                     break;
             }
         } else if (o.getClass() == TimerPanel.class) {
             switch ((TimerStatus) arg) {
-                case NOTIF_ON:
+                case NOTIF_ON: // timer has hit 0
                     frameToFront(frame);
                     refresh();
                     break;
-                case NOTIF_DISMISSED:
+                case NOTIF_NEXT: // user clicked next
+                    refresh();
+                    break;
+                case NOTIF_DISMISSED: // user clicked dismiss
                     frame.setAlwaysOnTop(false);
                     frame.toBack();
                     refresh();
