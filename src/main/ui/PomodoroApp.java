@@ -24,7 +24,6 @@ public class PomodoroApp implements Observer, ActionListener {
 
     public static final Color COLOUR_NEUTRAL = new Color(182, 192, 214);
     public static final Color COLOUR_START = new Color(191, 214, 182);
-    public static final Color COLOUR_STOP = new Color(214, 185, 182);
 
     private JFrame frame;
     private JPanel startPanel;
@@ -49,7 +48,7 @@ public class PomodoroApp implements Observer, ActionListener {
         frame.setLocationRelativeTo(null);
         frame.setLayout(new GridBagLayout());
 
-        exitButton = new JLabel(new ImageIcon("./data/exitButton.png"));
+        exitButton = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("exitButton.png")));
         exitButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
