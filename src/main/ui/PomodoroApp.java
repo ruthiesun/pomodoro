@@ -14,15 +14,15 @@ import java.util.Observer;
  * Manages pomodoro timers
  */
 public class PomodoroApp implements Observer, ActionListener {
-    // minimum window dimensions
-    public static final int WIDTH = 400;
-    public static final int HEIGHT = 150;
-
     // default duration of pomodoro phases in seconds
-    public static final int DEFAULT_WORK_DURATION = 25*60;
-    public static final int DEFAULT_SHORT_BREAK_DURATION = 5*60;
-    public static final int DEFAULT_LONG_BREAK_DURATION = 15*60;
-    public static final int DEFAULT_NUM_REPS = 4;
+    public static final int DEFAULT_WORK_DURATION = 5;//25*60;
+    public static final int DEFAULT_SHORT_BREAK_DURATION = 4;//5*60;
+    public static final int DEFAULT_LONG_BREAK_DURATION = 3;//15*60;
+    public static final int DEFAULT_NUM_REPS = 2;//4;
+
+    public static final Color COLOUR_NEUTRAL = new Color(182, 192, 214);
+    public static final Color COLOUR_START = new Color(191, 214, 182);
+    public static final Color COLOUR_STOP = new Color(214, 185, 182);
 
     private JFrame frame;
     private JPanel startPanel;
@@ -33,34 +33,46 @@ public class PomodoroApp implements Observer, ActionListener {
     private TimerPanel timerPanel;
     private Pomodoro pomodoro;
 
+    private GridBagConstraints gbc;
+
     // EFFECTS: starts the pomodoro app
     public PomodoroApp() {
         // set up window
         frame = new JFrame("Pomodoro Timer");
-        frame.setMinimumSize(new Dimension(WIDTH, HEIGHT));
         frame.setUndecorated(true);
         frame.setOpacity(0.9F);
+        //frame.setBackground(PomodoroApp.COLOUR_BG);
+        frame.getRootPane().setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, UIManager.getColor(frame.getBackground())));
         //setLocationToBotRight(frame);
         frame.setLocationRelativeTo(null);
-        frame.setLayout(new GridLayout(1,0)); //!!!
+        frame.setLayout(new GridBagLayout());
 
-        exitButton = new JButton("x");
+        exitButton = new JButton();
+        exitButton.setBackground(PomodoroApp.COLOUR_STOP);
         exitButton.addActionListener(this);
 
-        // set up starting menu contents
+        setupStartMenu();
+
+        gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+
+        frame.setVisible(true);
+        addFrameComponents(startPanel);
+    }
+
+    // EFFECTS: helper for constructor; sets up start menu GUI components
+    private void setupStartMenu() {
         settingsPanel = new SettingsPanel();
 
         startButton = new JButton("go!");
+        startButton.setBackground(PomodoroApp.COLOUR_START);
         startButton.addActionListener(this);
 
         startPanel = new JPanel();
         startPanel.setLayout(new BorderLayout());
         startPanel.add(settingsPanel, BorderLayout.CENTER);
         startPanel.add(startButton, BorderLayout.PAGE_END);
-
-        frame.add(startPanel); //!!!
-        frame.setVisible(true);
-        refresh();
     }
 
     // MODIFIES: f
@@ -104,12 +116,11 @@ public class PomodoroApp implements Observer, ActionListener {
                 break;
         }
 
-
-        frame.add(timerPanel.getPanel());
+        frame.remove(exitButton);
+        addFrameComponents(timerPanel.getPanel());
         timerPanel.addObserver(this);
         timerPanel.addObserver(pomodoro);
         timerPanel.refresh();
-        refresh();
     }
 
     // MODIFIES: timerPanel, frame
@@ -129,8 +140,8 @@ public class PomodoroApp implements Observer, ActionListener {
                     newTimer(PomodoroStatus.LONG_BREAK);
                     break;
                 case DONE:
-                    frame.add(startPanel);
-                    refresh();
+                    frame.remove(exitButton);
+                    addFrameComponents(startPanel);
                     break;
             }
         } else if (o.getClass() == TimerPanel.class) {
@@ -161,12 +172,28 @@ public class PomodoroApp implements Observer, ActionListener {
         //f.setAlwaysOnTop(false);
     }
 
+    // EFFECTS: adds given panel plus the exit button; repaints at the end
+    private void addFrameComponents(JPanel p) {
+        gbc.gridx = 0;
+        gbc.gridheight = 1;
+        gbc.gridwidth = 10;
+        frame.add(p, gbc);
+
+        gbc.gridx = 10;
+        gbc.gridheight = 1;
+        gbc.gridwidth = 1;
+        frame.add(exitButton, gbc);
+
+        refresh();
+    }
+
     // MODIFIES: frame
     // EFFECTS: repaints the window
     private void refresh() {
-        frame.add(exitButton);
         frame.validate();
         frame.repaint();
+        frame.pack();
+        frame.setLocationRelativeTo(null);
     }
 
     // MODIFIES: startPanel

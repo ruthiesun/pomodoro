@@ -17,8 +17,8 @@ public class TimerPanel extends Observable implements ActionListener {
     private int counter; // number of seconds left
 
     private JPanel panel;
-    private JTextField time;
-    private JTextField message;
+    private JLabel time;
+    private JLabel message;
     private JButton nextButton;
     private JButton dismissButton;
     private JPanel buttonPanel;
@@ -32,13 +32,13 @@ public class TimerPanel extends Observable implements ActionListener {
 
         switch (pomodoroStatus) {
             case WORK:
-                message = new JTextField("time to work");
+                message = new JLabel("time to work");
                 break;
             case BREAK:
-                message = new JTextField("time to take a break");
+                message = new JLabel("time to take a break");
                 break;
             case LONG_BREAK:
-                message = new JTextField("time to take a long break");
+                message = new JLabel("time to take a long break");
                 break;
         }
 
@@ -49,17 +49,23 @@ public class TimerPanel extends Observable implements ActionListener {
 
     // EFFECTS: sets up GUI elements
     private void setup() {
+        panel = new JPanel();
+
+        time = new JLabel("00:00");
+        time.setFont(new Font(time.getFont().getFontName(), Font.BOLD, time.getFont().getSize() * 3));
+
         nextButton = new JButton("next");
+        nextButton.setBackground(PomodoroApp.COLOUR_START);
         nextButton.addActionListener(this);
         nextButton.setVisible(false);
         dismissButton = new JButton("dismiss");
+        dismissButton.setBackground(PomodoroApp.COLOUR_NEUTRAL);
         dismissButton.addActionListener(this);
         dismissButton.setVisible(false);
         buttonPanel = new JPanel(new GridLayout(1,0));
         buttonPanel.add(nextButton);
         buttonPanel.add(dismissButton);
 
-        panel = new JPanel();
         panel.setLayout(new GridLayout(0,1));
         panel.add(time);
         panel.add(message);
@@ -83,8 +89,9 @@ public class TimerPanel extends Observable implements ActionListener {
         int numMin = counter/60;
         int numSec = counter%60;
 
-        String timeAsString = addZeroes(numMin) + " : " + addZeroes(numSec);
-        time = new JTextField(timeAsString);
+        String timeAsString = addZeroes(numMin) + ":" + addZeroes(numSec);
+        time = new JLabel(timeAsString);
+        time.setFont(new Font(time.getFont().getFontName(), Font.BOLD, time.getFont().getSize() * 3));
     }
 
     // EFFECTS: return given number prepended by 0s such at there are at least two digits in the returned string
@@ -102,7 +109,7 @@ public class TimerPanel extends Observable implements ActionListener {
     // MODIFIES: message, button
     // EFFECTS: makes button visible and updates message
     private void displayNotif() {
-        message = new JTextField("done this phase");
+        message = new JLabel("done this phase");
         nextButton.setVisible(true);
         dismissButton.setVisible(true);
     }

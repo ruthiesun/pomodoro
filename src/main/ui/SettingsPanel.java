@@ -31,9 +31,13 @@ public class SettingsPanel extends JPanel {
     private void initFields() {
         loopCheckBox = new JCheckBox();
         lengthWorkField = new JTextField();
+        lengthWorkField.setColumns(2);
         lengthShortBreakField = new JTextField();
+        lengthShortBreakField.setColumns(2);
         lengthLongBreakField = new JTextField();
+        lengthLongBreakField.setColumns(2);
         numRepsField = new JTextField();
+        numRepsField.setColumns(2);
 
         loopCheckLabel = new JLabel("loop indefinitely");
         lengthWorkLabel = new JLabel("length of work period (minutes): ");
@@ -50,15 +54,32 @@ public class SettingsPanel extends JPanel {
         loopCheckPanel.add(loopCheckLabel);
 
         JPanel textFieldPanel = new JPanel();
-        textFieldPanel.setLayout(new GridLayout(4,2));
-        textFieldPanel.add(lengthWorkLabel);
-        textFieldPanel.add(lengthWorkField);
-        textFieldPanel.add(lengthShortBreakLabel);
-        textFieldPanel.add(lengthShortBreakField);
-        textFieldPanel.add(lengthLongBreakLabel);
-        textFieldPanel.add(lengthLongBreakField);
-        textFieldPanel.add(numRepsFieldLabel);
-        textFieldPanel.add(numRepsField);
+        textFieldPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        textFieldPanel.add(lengthWorkLabel, gbc);
+        gbc.gridy = 1;
+        textFieldPanel.add(lengthShortBreakLabel, gbc);
+        gbc.gridy = 2;
+        textFieldPanel.add(lengthLongBreakLabel, gbc);
+        gbc.gridy = 3;
+        textFieldPanel.add(numRepsFieldLabel, gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        textFieldPanel.add(lengthWorkField, gbc);
+        gbc.gridy = 1;
+        textFieldPanel.add(lengthShortBreakField, gbc);
+        gbc.gridy = 2;
+        textFieldPanel.add(lengthLongBreakField, gbc);
+        gbc.gridy = 3;
+        textFieldPanel.add(numRepsField, gbc);
 
         this.add(loopCheckPanel);
         this.add(textFieldPanel);
