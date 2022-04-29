@@ -15,6 +15,7 @@ public class TimerPanel extends Observable implements ActionListener {
     public static final int SECOND = 1000; // 1 second in ms
 
     private int counter; // number of seconds left
+    private PomodoroStatus pomodoroStatus;
 
     private JPanel panel;
     private JLabel time;
@@ -29,16 +30,17 @@ public class TimerPanel extends Observable implements ActionListener {
     // EFFECTS: starts a timer according to the give pomodoro phase and duration
     public TimerPanel(PomodoroStatus pomodoroStatus, int duration) {
         super();
+        this.pomodoroStatus = pomodoroStatus;
 
         switch (pomodoroStatus) {
             case WORK:
-                message = new JLabel("time to work");
+                message = new JLabel("Working...");
                 break;
             case BREAK:
-                message = new JLabel("time to take a break");
+                message = new JLabel("Taking a break...");
                 break;
             case LONG_BREAK:
-                message = new JLabel("time to take a long break");
+                message = new JLabel("Taking a long break...");
                 break;
         }
 
@@ -109,7 +111,14 @@ public class TimerPanel extends Observable implements ActionListener {
     // MODIFIES: message, button
     // EFFECTS: makes button visible and updates message
     private void displayNotif() {
-        message = new JLabel("done this phase");
+        switch (pomodoroStatus) {
+            case WORK:
+                message = new JLabel("Time to take a break");
+                break;
+            default:
+                message = new JLabel("Time to work");
+                break;
+        }
         nextButton.setVisible(true);
         dismissButton.setVisible(true);
     }

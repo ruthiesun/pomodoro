@@ -15,10 +15,10 @@ import java.util.Observer;
  */
 public class PomodoroApp implements Observer, ActionListener {
     // default duration of pomodoro phases in seconds
-    public static final int DEFAULT_WORK_DURATION = 5;//25*60;
-    public static final int DEFAULT_SHORT_BREAK_DURATION = 4;//5*60;
-    public static final int DEFAULT_LONG_BREAK_DURATION = 3;//15*60;
-    public static final int DEFAULT_NUM_REPS = 2;//4;
+    public static final int DEFAULT_WORK_DURATION = 25*60;
+    public static final int DEFAULT_SHORT_BREAK_DURATION = 5*60;
+    public static final int DEFAULT_LONG_BREAK_DURATION = 15*60;
+    public static final int DEFAULT_NUM_REPS = 4;
 
     public static final Color COLOUR_NEUTRAL = new Color(182, 192, 214);
     public static final Color COLOUR_START = new Color(191, 214, 182);

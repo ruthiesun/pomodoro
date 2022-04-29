@@ -32,18 +32,22 @@ public class SettingsPanel extends JPanel {
         loopCheckBox = new JCheckBox();
         lengthWorkField = new JTextField();
         lengthWorkField.setColumns(2);
+        lengthWorkField.setText(Integer.toString(PomodoroApp.DEFAULT_WORK_DURATION/60));
         lengthShortBreakField = new JTextField();
         lengthShortBreakField.setColumns(2);
+        lengthShortBreakField.setText(Integer.toString(PomodoroApp.DEFAULT_SHORT_BREAK_DURATION/60));
         lengthLongBreakField = new JTextField();
         lengthLongBreakField.setColumns(2);
+        lengthLongBreakField.setText(Integer.toString(PomodoroApp.DEFAULT_LONG_BREAK_DURATION/60));
         numRepsField = new JTextField();
         numRepsField.setColumns(2);
+        numRepsField.setText(Integer.toString(PomodoroApp.DEFAULT_NUM_REPS));
 
-        loopCheckLabel = new JLabel("loop indefinitely");
-        lengthWorkLabel = new JLabel("length of work period (minutes): ");
-        lengthShortBreakLabel = new JLabel("length of short break (minutes): ");
-        lengthLongBreakLabel = new JLabel("length of long break (minutes): ");
-        numRepsFieldLabel = new JLabel("number of repetitions: ");
+        loopCheckLabel = new JLabel("Loop indefinitely?");
+        lengthWorkLabel = new JLabel("Length of work period (minutes): ");
+        lengthShortBreakLabel = new JLabel("Length of short break (minutes): ");
+        lengthLongBreakLabel = new JLabel("Length of long break (minutes): ");
+        numRepsFieldLabel = new JLabel("Number of work periods before a long break: ");
     }
 
     // EFFECTS: helper for constructor; sets up GUI components
@@ -92,7 +96,7 @@ public class SettingsPanel extends JPanel {
     private boolean fieldValid(JTextField f) {
         String input = f.getText();
         if (input.length() == 0) {
-            return true;
+            return false;
         }
 
         try {
@@ -119,47 +123,31 @@ public class SettingsPanel extends JPanel {
     }
 
     // REQUIRES: input is empty or can be parsed to an int
-    // EFFECTS: returns the value inputted by the user or the default work length if no value was entered
+    // EFFECTS: returns the value inputted by the user
     public int getLengthWork () {
         String input = lengthWorkField.getText();
-        if (input.length() == 0) {
-            return PomodoroApp.DEFAULT_WORK_DURATION;
-        } else {
-            return Integer.parseInt(input)*60;
-        }
+        return Integer.parseInt(input)*60;
     }
 
     // REQUIRES: input is empty or can be parsed to an int
-    // EFFECTS: returns the value inputted by the user or the default short break length if no value was entered
+    // EFFECTS: returns the value inputted by the user
     public int getLengthShortBreak() {
         String input = lengthShortBreakField.getText();
-        if (input.length() == 0) {
-            return PomodoroApp.DEFAULT_SHORT_BREAK_DURATION;
-        } else {
-            return Integer.parseInt(input)*60;
-        }
+        return Integer.parseInt(input)*60;
     }
 
     // REQUIRES: input is empty or can be parsed to an int
-    // EFFECTS: returns the value inputted by the user or the default long break length if no value was entered
+    // EFFECTS: returns the value inputted by the user
     public int getLengthLongBreak() {
         String input = lengthLongBreakField.getText();
-        if (input.length() == 0) {
-            return PomodoroApp.DEFAULT_LONG_BREAK_DURATION;
-        } else {
-            return Integer.parseInt(input)*60;
-        }
+        return Integer.parseInt(input)*60;
     }
 
     // REQUIRES: input is empty or can be parsed to an int
     // EFFECTS: returns the value inputted by the user or the default number of reps if no value was entered
     public int getNumReps() {
         String input = numRepsField.getText();
-        if (input.length() == 0) {
-            return PomodoroApp.DEFAULT_NUM_REPS;
-        } else {
-            return Integer.parseInt(input);
-        }
+        return Integer.parseInt(input);
     }
 
     // EFFECTS: returns true if the user has indicated that the pomodoro should loop infinitely, false otherwise
