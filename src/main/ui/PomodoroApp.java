@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -28,7 +30,7 @@ public class PomodoroApp implements Observer, ActionListener {
     private JPanel startPanel;
     private SettingsPanel settingsPanel;
     private JButton startButton;
-    private JButton exitButton;
+    private JLabel exitButton;
 
     private TimerPanel timerPanel;
     private Pomodoro pomodoro;
@@ -42,15 +44,18 @@ public class PomodoroApp implements Observer, ActionListener {
         frame = new JFrame("Pomodoro Timer");
         frame.setUndecorated(true);
         frame.setOpacity(0.9F);
-        //frame.setBackground(PomodoroApp.COLOUR_BG);
         frame.getRootPane().setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, UIManager.getColor(frame.getBackground())));
         //setLocationToBotRight(frame);
         frame.setLocationRelativeTo(null);
         frame.setLayout(new GridBagLayout());
 
-        exitButton = new JButton();
-        exitButton.setBackground(PomodoroApp.COLOUR_STOP);
-        exitButton.addActionListener(this);
+        exitButton = new JLabel(new ImageIcon("./data/exitButton.png"));
+        exitButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.exit(0);
+            }
+        });
 
         setupStartMenu();
 
@@ -184,7 +189,7 @@ public class PomodoroApp implements Observer, ActionListener {
     // EFFECTS: adds given panel plus the exit button; repaints at the end
     private void addFrameComponents(JPanel p) {
         gbc.gridx = 0;
-        gbc.gridheight = 1;
+        gbc.gridheight = 10;
         gbc.gridwidth = 10;
         frame.add(p, gbc);
 
@@ -206,7 +211,7 @@ public class PomodoroApp implements Observer, ActionListener {
     }
 
     // MODIFIES: startPanel
-    // EFFECTS: makes the starting menu invisible and starts a pomodoro
+    // EFFECTS: if startButton was clicked, makes the starting menu invisible and starts a pomodoro
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == startButton) {
@@ -214,8 +219,6 @@ public class PomodoroApp implements Observer, ActionListener {
                 frame.remove(startPanel);
                 startPomodoro();
             }
-        } else if (e.getSource() == exitButton) {
-            System.exit(0);
         }
     }
 }
