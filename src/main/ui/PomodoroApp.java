@@ -33,7 +33,6 @@ public class PomodoroApp implements Observer, ActionListener {
 
     private TimerPanel timerPanel;
     private Pomodoro pomodoro;
-    private PomodoroStatus pomodoroStatus;
 
     private GridBagConstraints gbc;
 
@@ -106,7 +105,6 @@ public class PomodoroApp implements Observer, ActionListener {
     // MODIFIES: timerPanel, frame
     // EFFECTS: starts a timer for a pomodoro phase
     private void newTimer(PomodoroStatus pomodoroStatus) {
-        this.pomodoroStatus = pomodoroStatus;
         switch(pomodoroStatus) {
             case WORK:
                 int work = settingsPanel.getLengthWork();
