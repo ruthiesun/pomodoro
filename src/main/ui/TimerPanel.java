@@ -171,11 +171,6 @@ public class TimerPanel extends Observable implements ActionListener {
         return panel;
     }
 
-    // EFFECTS: returns true if next period is a break
-    public boolean goingOnBreak() {
-        return pomodoroStatus == PomodoroStatus.WORK;
-    }
-
     // MODIFIES: panel
     // EFFECTS: repaints panel
     public void refresh() {
